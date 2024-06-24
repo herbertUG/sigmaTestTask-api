@@ -1,35 +1,47 @@
 'use strict';
 const {
-  Model
+  Model, DataTypes
 } = require('sequelize');
-const sequelize = require('../config/database');
+const bcypt = require('bcrypt');
+const Sequelize = require('../../config/database');
 
-module.exports =sequelize.define('user', {
+module.exports = Sequelize.define('user', {
   id: {
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
-    type: Sequelize.INTEGER
+    type: DataTypes.INTEGER
   },
   firstName: {
-    type: Sequelize.STRING
+    type: DataTypes.STRING
   },
   lastName: {
-    type: Sequelize.STRING
+    type: DataTypes.STRING
   },
   email: {
-    type: Sequelize.STRING
+    type: DataTypes.STRING
   },
   password: {
-    type: Sequelize.STRING
+    type: DataTypes.STRING
+  },
+  confirmPassword: {
+    type: DataTypes.VIRTUAL,
+    set(value) {
+      if (value !== this.password) {
+        throw new Error('Password confirmation does not match password');
+      } else {
+        const hashedPassword = bcypt.hashSync(value, 10);
+        this.setDataValue('password ', hashedPassword);
+      }
+    }
   },
   createdAt: {
     allowNull: false,
-    type: Sequelize.DATE
+    type: DataTypes.DATE
   },
   updatedAt: {
     allowNull: false,
-    type: Sequelize.DATE
+    type: DataTypes.DATE
   }
 }, {
  freezeTableName: true,
