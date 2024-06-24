@@ -4,6 +4,7 @@ const {
 } = require('sequelize');
 const bcypt = require('bcrypt');
 const Sequelize = require('../../config/database');
+const AppError = require('../../utils/appError');
 
 module.exports = Sequelize.define('user', {
   id: {
@@ -28,7 +29,7 @@ module.exports = Sequelize.define('user', {
     type: DataTypes.VIRTUAL,
     set(value) {
       if (value !== this.password) {
-        throw new Error('Password confirmation does not match password');
+        throw new AppError('Password and confirm password do not match', 400);
       } else {
         const hashedPassword = bcypt.hashSync(value, 10);
         this.setDataValue('password ', hashedPassword);
