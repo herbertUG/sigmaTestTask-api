@@ -2,6 +2,7 @@ require("dotenv").config({ path: `${process.cwd()}/.env` });
 const express = require("express");
 
 const authRouter = require("./route/authRoute");
+const candidateRouter = require("./route/candidateRoute");
 const catchAsync = require("./utils/catchAsync");
 const AppError = require("./utils/appError");
 const { stack } = require("sequelize/lib/utils");
@@ -12,6 +13,7 @@ const app = express();
 app.use(express.json());
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/candidates", candidateRouter);
 
 // handle route not found
 app.use('*', catchAsync(async(req, res, next) => {

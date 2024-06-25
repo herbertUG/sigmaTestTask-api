@@ -40,30 +40,46 @@ const signup = catchAsync(async (req, res, next) => {
 
 const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
+
   if (!email || !password) {
-    return next(new AppError("Please provide email and password", 400));
+      return next(new AppError('Please provide email and password', 400));
   }
 
-  const result = await user.findOne({
-    where: {
-      email: email,
-    },
-  });
-  if (!result || (await bcrpyt.compareSync(password, result.password))) {
-    return res.status(404).json({
-      message: "Invalid email or password",
-      status: "error",
-    });
+  const result = await user.findOne({ where: { email } });
+  if (!result || !(await bcrpyt.compare(password, result.password))) {
+      return next(new AppError('Incorrect email or password', 401));
   }
 
   const token = generateToken({
-    id: result.idres,
+      id: result.id,
   });
 
   return res.json({
-    status: "success",
-    token,
+      status: 'success',
+      token,
   });
 });
 
-module.exports = { signup, login };
+const authentication = catchAsync(async (req, res, next) => {
+  let idToken = '';
+  if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+  ) {
+      idToken = req.headers.authorization.split(' ')[1];
+  }
+  if (!idToken) {
+      return next(new AppError('Please login to get access', 401));
+  }
+  const tokenDetail = jwt.verify(idToken, process.env.JWT_SECRET_KEY);
+  const freshUser = await user.findByPk(tokenDetail.payload.id);
+  console.log(tokenDetail);
+
+  if (!freshUser) {
+      return next(new AppError('User no longer exists', 400));
+  }
+  req.user = freshUser;
+  return next();
+});
+
+module.exports = { signup, login, authentication };
