@@ -11,12 +11,6 @@ const generateToken = (payload) => {
 };
 
 const signup = catchAsync(async (req, res, next) => {
-  const existingUser = await user.findOne({ where: { email:req.body.email } });
-
-  if (existingUser) {
-    return next(new AppError("User already exists", 400));
-  }
-
   const newUser = await user.create({
     firstName: req.body.firstName,
     lastName: req.body.lastName,

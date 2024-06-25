@@ -14,20 +14,63 @@ module.exports = Sequelize.define('user', {
     type: DataTypes.INTEGER
   },
   firstName: {
-    type: DataTypes.STRING
+    type: DataTypes.STRING,
+    allowNull:false,
+    validate: {
+      notNull:{
+        msg: 'Please enter your first name'
+      },
+      notEmpty:{
+        msg: 'First name cannot be empty'
+      },
+    }
   },
   lastName: {
-    type: DataTypes.STRING
+    type: DataTypes.STRING,
+    allowNull:false,
+    validate: {
+      notNull:{
+        msg: 'Please enter your last name'
+      },
+      notEmpty:{
+        msg: 'Last name cannot be empty'
+      },
+    }
   },
   email: {
-    type: DataTypes.STRING
+    type: DataTypes.STRING,
+    unique: true,
+    allowNull:false,
+    validate: {
+      notNull:{
+        msg: 'Please enter your email'
+      },
+      notEmpty:{
+        msg: 'Email cannot be empty'
+      },
+      isEmail:{
+        msg: 'Please enter a valid email'
+      },
+    }
   },
   password: {
-    type: DataTypes.STRING
+    type: DataTypes.STRING,
+    allowNull:false,
+    validate: {
+      notNull:{
+        msg: 'Please enter your password'
+      },
+      notEmpty:{
+        msg: 'Password name cannot be empty'
+      },
+    }
   },
   confirmPassword: {
     type: DataTypes.VIRTUAL,
     set(value) {
+      if(this.password.length < 6) {
+        throw new AppError('Password must be at least 6 characters', 400);
+      }
       if (value !== this.password) {
         throw new AppError('Password and confirm password do not match', 400);
       } else {
