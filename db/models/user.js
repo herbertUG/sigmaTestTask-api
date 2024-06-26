@@ -68,17 +68,17 @@ module.exports = Sequelize.define('user', {
   confirmPassword: {
     type: DataTypes.VIRTUAL,
     set(value) {
-      if(this.password.length < 6) {
-        throw new AppError('Password must be at least 6 characters', 400);
-      }
-      if (value !== this.password) {
-        throw new AppError('Password and confirm password do not match', 400);
-      } else {
-        const hashedPassword = bcypt.hashSync(value, 10);
-        this.setDataValue('password ', hashedPassword);
-      }
-    }
-  },
+        if (this.password.length < 6) {
+          throw new AppError('Password must be at least 6 characters', 400);
+        }
+        if (value === this.password) {
+            const hashPassword = bcypt.hashSync(value, 10);
+            this.setDataValue('password', hashPassword);
+        } else {
+          throw new AppError('Password and confirm password do not match', 400);
+        }
+    },
+},
   createdAt: {
     allowNull: false,
     type: DataTypes.DATE
