@@ -1,5 +1,6 @@
 require("dotenv").config({ path: `${process.cwd()}/.env` });
 const express = require("express");
+const cors = require('cors');
 
 const authRouter = require("./route/authRoute");
 const candidateRouter = require("./route/candidateRoute");
@@ -9,6 +10,8 @@ const { stack } = require("sequelize/lib/utils");
 const globalErrorHandler = require("./controller/errorController");
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
